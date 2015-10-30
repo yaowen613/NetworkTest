@@ -89,7 +89,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     式存在，数据与数据之间⽤&符号隔开，⽐如说我们想要向服务器提交⽤户名和密码，就可以
     这样写：
             connection.setRequestMethod("POST");
-    DataOutputStream out = new
-            DataOutputStream(connection.getOutputStream());
-    out.writeBytes("username=admin&password=123456");*/
+            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+            out.writeBytes("username=admin&password=123456");
+
+            */
 }
