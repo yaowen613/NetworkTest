@@ -60,12 +60,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 HttpGet httpGet=new HttpGet("https://www.baidu.com");
                 try {
                     HttpResponse httpResponse=httpClient.execute(httpGet);
-                    if (httpResponse.getStatusLine().getStatusCode()==200){
+                    if (httpResponse.getStatusLine().getStatusCode()==200){// 请求和响应都成功了
                         HttpEntity entity=httpResponse.getEntity();
                         String response= EntityUtils.toString(entity, "utf-8");
                         Message message=new Message();
                         message.what=SHOW_RESPONSE;
-                        message.obj=response.toString();
+                        message.obj=response.toString();// 将服务器返回的结果存放到Message中
                         handler.sendMessage(message);
                     }
                 } catch (IOException e) {
