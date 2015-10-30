@@ -8,11 +8,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final int SHOW_RESPONSE = 0;
@@ -53,44 +56,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new Thread(new Runnable() {
             @Override
             public void run() {
-                HttpURLConnection conn = null;
+                HttpClient httpClient=new DefaultHttpClient();
+                HttpGet httpGet=new HttpGet("https://www.baidu.com");
                 try {
-                    URL url = new URL("https://www.baidu.com");
-                    conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("GET");
-                    conn.setConnectTimeout(8000);
-                    conn.setReadTimeout(8000);
-                    InputStream inputStream = conn.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuffer response = new StringBuffer();
-                    String line;
-                    while ((line = bufferedReader.readLine()) != null) {
-                        response.append(line);
+                    HttpResponse httpResponse=httpClient.execute(httpGet);
+                    if (httpResponse.getStatusLine().getStatusCode()==200){
+                        HttpEntity entity=httpResponse.getEntity();
+                        String response= EntityUtils.toString(entity, "utf-8");
+                        Message message=new Message();
+                        message.what=SHOW_RESPONSE;
+                        message.obj=response.toString();
+                        handler.sendMessage(message);
                     }
-                    Message message = new Message();
-                    message.what = SHOW_RESPONSE;
-                    // 将服务器返回的结果存放到Message中
-                    message.obj = response.toString();
-                    handler.sendMessage(message);
-                } catch (Exception e) {
+                } catch (IOException e) {
                     e.printStackTrace();
-                } finally {
-                    if (conn != null) {
-                        conn.disconnect();
-                    }
                 }
             }
         }).start();
     }
-
-    /*笔记
-
-    将HTTP请求的⽅法改成POST，并在获取输⼊流之前把要提交的数据写出即可。注意每条数据都要以键值对的形
-    式存在，数据与数据之间⽤&符号隔开，⽐如说我们想要向服务器提交⽤户名和密码，就可以
-    这样写：
-            connection.setRequestMethod("POST");
-            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-            out.writeBytes("username=admin&password=123456");
-
-            */
 }
